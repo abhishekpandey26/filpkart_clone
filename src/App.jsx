@@ -1,8 +1,26 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Home from "./pages/Home";
+import { Route, Routes } from "react-router-dom";
+import Product from "./pages/Product";
 
 const App = () => {
   const [cartCount, setCartCount] = useState(0);
+  const [productData, setProductData] = useState([]);
+
+  // Fetch products from the API
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch("https://fakestoreapi.com/products");
+        const data = await res.json();
+        setProductData(data);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   const appData = {
     navbarData: {
@@ -11,7 +29,6 @@ const App = () => {
       cartCount: cartCount,
       searchPlaceholder: "Search for Products, Brands and More",
       // Optional: add logo icon from Font Awesome
-      logoIcon: "https://cdn-icons-png.flaticon.com/512/888/888879.png", // Flipkart logo or custom one
     },
 
     categories: [
@@ -60,7 +77,8 @@ const App = () => {
 
     banners: [
       {
-        image: "https://images.unsplash.com/photo-1604999329148-3088d02f9e4f", // flight banner
+        image:
+          "https://media.istockphoto.com/id/1954021415/photo/summer-palm-tree-and-tropical-beach-with-aqua-waves-and-coconut-palm-shadow-on-blue-background.jpg?s=2048x2048&w=is&k=20&c=i7ovkPdcfO3ilnC8zT9O_cAMuGpHYDL7atDuiezccFQ=", // flight banner
         alt: "Flight Booking Offer",
         subtitle: "Exclusive fare*",
         title: "Up to 15% Off",
@@ -135,6 +153,9 @@ const App = () => {
   return (
     <div className="bg-gray-100 min-h-screen">
       <Home appData={appData} updateCartCount={updateCartCount} />
+      <Routes>
+        <Route path="/product" element={<Product products={productData} />} />
+      </Routes>
     </div>
   );
 };
