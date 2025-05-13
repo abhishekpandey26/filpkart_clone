@@ -6,6 +6,7 @@ import Product from "./pages/Product";
 const App = () => {
   const [cartCount, setCartCount] = useState(0);
   const [productData, setProductData] = useState([]);
+  const [cart, setCart] = useState([]);
 
   // Fetch products from the API
   useEffect(() => {
@@ -21,6 +22,32 @@ const App = () => {
 
     fetchProducts();
   }, []);
+
+  // Load cart from localStorage on component mount
+  useEffect(() => {
+    const savedCart = localStorage.getItem("cart");
+    if (savedCart) {
+      const parsedCart = JSON.parse(savedCart);
+      setCart(parsedCart);
+      setCartCount(parsedCart.length);
+    }
+  }, []);
+
+  // Save cart to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cart));
+    setCartCount(cart.length);
+  }, [cart]);
+
+  const updateCart = (id) => {
+    if (cart.includes(id)) {
+      // Remove from cart
+      setCart(cart.filter(itemId => itemId !== id));
+    } else {
+      // Add to cart
+      setCart([...cart, id]);
+    }
+  };
 
   const appData = {
     navbarData: {
@@ -146,15 +173,20 @@ const App = () => {
     },
   };
 
-  const updateCartCount = (count) => {
-    setCartCount(count);
-  };
-
   return (
     <div className="bg-gray-100 min-h-screen">
-      <Home appData={appData} updateCartCount={updateCartCount} />
       <Routes>
-        <Route path="/product" element={<Product products={productData} />} />
+        <Route path="/" element={<Home appData={appData} />} />
+        <Route 
+          path="/product" 
+          element={
+            <Product 
+              products={productData} 
+              cart={cart} 
+              updateCart={updateCart} 
+            />
+          } 
+        />
       </Routes>
     </div>
   );

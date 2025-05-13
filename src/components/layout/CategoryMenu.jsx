@@ -4,9 +4,10 @@ import { useNavigate } from "react-router-dom";
 
 const CategoryMenu = ({ categories }) => {
   const navigate = useNavigate();
-
+  
   const handleCategoryClick = (category) => {
-    navigate("/product");
+    // Pass the category information as state when navigating
+    navigate("/product", { state: { category } });
   };
 
   return (
